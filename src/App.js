@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
+
 import { Container } from './components/Container/Container';
 import Loader from "react-loader-spinner";
 import  imgApi from './api/pixabey-api';
@@ -7,6 +8,7 @@ import Searchbar from './components/Searchbar/Searchbar';
 import  {ImageGallery}  from './components/ImageGallery/ImageGallery';
 import Modal from './components/Modal/Modal';
 import { Button } from './components/Button/Button';
+import { mapper } from './helpers/mapper';
 
 class App extends Component {
   state = {
@@ -37,19 +39,20 @@ class App extends Component {
         if (images.total === 0) {
           return toast.error('Not found!')
         }
+        
         this.setState(prevState => ({
-          images: [...prevState.images, ...images.hits],
+          images: [...prevState.images, ...mapper(images.hits)],
         }));
-      })
-    .catch(error => this.setState({ error }))
-      .finally(() => {
-        this.setState({ isLoading: false });
+
         setTimeout(() => {
           document.querySelector('#gallery').scrollIntoView({
             behavior: 'smooth', block: 'end',
           });
         }, 1000)
-      
+      })
+    .catch(error => this.setState({ error }))
+      .finally(() => {
+        this.setState({ isLoading: false });
       });
 
   }
@@ -91,17 +94,18 @@ class App extends Component {
       <Container>
         <Searchbar onSubmit={this.onChangeQuery} />
         <ToastContainer autoClose={3000} theme={ 'dark'}/>
+
+        {images.length>0 && <ImageGallery images={images} onClickImg={this.onClickImg} />}
+
         {isLoading && <Loader
           type="ThreeDots"
           color="#00BFFF"
           height={80}
           width={80}
-          timeout={3000} //3 secs
+          timeout={3000} 
       />}
 
-        <ImageGallery images={images} onClickImg={this.onClickImg} />
-
-        {images.length>0 && <Button onClickLoadMore={this.onClickLoadMore}/>}
+        {images.length > 11 && <Button onClickLoadMore={this.onClickLoadMore} />}
         
         {showModal && (
           <Modal src={modalImg } alt={alt} onClose={ this.toggleModal}/>

@@ -8,7 +8,7 @@ function fetchImg (searchQuery, page) {
     let url= `${BASE_URL}?image_type=photo&orientation=horizontal&q=${searchQuery}&page=${page}&per_page=${per_page}&key=${API_KEY}`;
     
   return fetch(url)
-      .then(response=>response.json()) 
+    .then(response =>response.json()) 
       .then(data=> data)
 }
 const api = {
